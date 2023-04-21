@@ -1,0 +1,10 @@
+export const actionTypes = {
+    LOGIN : 'SIGNIN',
+    LOGIN_SUCCESS : "LOGIN_SUCCESS",
+    LOGIN_ERROR : 'LOGIN_ERROR',
+
+    SIGNUP : 'SIGNUP',
+    SIGNUP_SUCCESS : "SIGNUP_SUCCESS",
+    SIGNUP_ERROR : 'SIGNUP_ERROR'
+
+}
