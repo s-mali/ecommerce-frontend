@@ -9,8 +9,10 @@
     "@hookform/resolvers": "^3.1.0",
     "@mui/base": "^5.0.0-alpha.126",
     "@mui/icons-material": "^5.11.16",
+    "@mui/joy": "^5.0.0-alpha.76",
     "@mui/material": "^5.12.1",
     "@mui/styled-engine-sc": "^5.12.0",
+    "@mui/styles": "^5.12.0",
     "@react-oauth/google": "^0.10.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
@@ -25,6 +27,7 @@
     "react-scripts": "5.0.1",
     "redux": "^4.2.1",
     "redux-saga": "^1.2.3",
+    "redux-thunk": "^2.4.2",
     "styled-components": "^5.3.9",
     "web-vitals": "^2.1.4",
     "yup": "^1.1.1"

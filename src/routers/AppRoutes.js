@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import AdminRestricted from './AdminRestricted'
-import UserRestricted from './UserRestricted'
 import Dashboard from '../components/admin/Dashboard'
 import PublicRoutes from './PublicRoutes'
 import Cart from '../components/user/Cart'
@@ -10,81 +8,76 @@ import ProductList from '../components/user/ProductList'
 import ProductDetails from '../components/user/ProductDetails'
 import Login from '../components/auth/Login'
 import SignUp from '../components/auth/SignUp'
+import Header from '../components/Header'
+import PrivateRoute from './privateRoutes'
 
 function AppRoutes() {
 
-    const [isAuth, setAuth] = useState(false)
-    const [role, setRole] = useState()
-
-    useEffect(() => {
-        const token = sessionStorage.getItem('token');
-        const role = sessionStorage.getItem('role');
-
-        if (token) {
-            setAuth(true)
-        }
-        if (role) {
-            setRole(role)
-        }
-    }, [])
 
     return (
         <BrowserRouter>
+            <Header />
             <Routes>
                 <Route
                     path="/admin/dashboard"
                     element={
-                        <AdminRestricted isAuth={isAuth} role={role}>
+                        <PrivateRoute roles={['admin']}>
                             <Dashboard />
-                        </AdminRestricted>
+                        </PrivateRoute>
                     }
                 />
                 <Route
                     path = "/cart"
                     element={
-                        <UserRestricted isAuth={isAuth} role={role}>
+                        <PrivateRoute  roles={['user']}>
                             <Cart/>
-                        </UserRestricted>
+                        </PrivateRoute>
                     }
                 />
                 <Route
                     path = "/wishlist"
                     element={
-                        <UserRestricted isAuth={isAuth} role={role}>
+                        <PrivateRoute roles={['user']} >
                             <Wishlist/>
-                        </UserRestricted>
+                        </PrivateRoute>
                     }
                 />
                 <Route
                     path = "/products"
                     element={
-                        <UserRestricted isAuth={isAuth} role={role}>
+                        <PrivateRoute roles={['user']}>
                             <ProductList/>
-                        </UserRestricted>
+                        </PrivateRoute>
                     }
                 />
                 <Route
                     path = "/products/:productId"
                     element={
-                        <UserRestricted isAuth={isAuth} role={role}>
+                        <PrivateRoute roles={['user']}>
                             <ProductDetails/>
-                        </UserRestricted>
+                        </PrivateRoute>
                     }
                 />
                 <Route
                     path = "/login"
                     element={
-                        <PublicRoutes isAuth={isAuth} role={role}>
-                            <Login/>
+                        <PublicRoutes>                      
+                            <Login/>                      
                         </PublicRoutes>
                     }
                 />
                 <Route
                     path = "/signup"
                     element={
-                        <PublicRoutes isAuth={isAuth} role={role}>
+                        <PublicRoutes >
                             <SignUp/>
                         </PublicRoutes>
+                    }
+                />
+                <Route
+                    path = "*"
+                    element={
+                        <PublicRoutes />
                     }
                 />
                 

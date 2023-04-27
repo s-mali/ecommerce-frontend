@@ -35,6 +35,12 @@ function Login() {
                 console.log(response.data);
                 sessionStorage.setItem("token", response.data.accessToken)
                 sessionStorage.setItem("role", response.data.user.role)
+                if(response.data.user.role === 'user'){
+                    navigate('/products')
+                }
+                else if(response.data.user.role === 'admin'){
+                    navigate('/admin/dashboard')
+                }
             })
             .catch((error) => {
                 console.log(error);
@@ -45,11 +51,14 @@ function Login() {
         console.log(response);
         let data = jwtDecode( response.credential)
         axios.post('http://localhost:5000/api/v1/login', data)
-        .then(function (response) { 
-            console.log(response.data);
-            sessionStorage.setItem("token", response.data.accessToken)
-            sessionStorage.setItem("role", response.data.user.role)
-        })
+            .then((response) => {
+                console.log(response.data);
+                sessionStorage.setItem("token", response.data.accessToken);
+                sessionStorage.setItem("role", response.data.user.role);
+                if(response.data.user.role === 'user'){
+                    navigate('/products')
+                }
+            })
         .catch(function (error) {
             console.log(error);
         });

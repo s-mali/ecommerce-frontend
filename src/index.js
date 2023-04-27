@@ -9,9 +9,9 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <GoogleOAuthProvider clientId="1013242954795-1q5fidar2g5a8cgb5lj1qpurf2ab1vao.apps.googleusercontent.com">
     <React.StrictMode>
-      {/* <Provider store={store}> */}
+      <Provider store={store}>
         <App />
-      {/* </Provider> */}
+      </Provider>
     </React.StrictMode>
   </GoogleOAuthProvider>
 );
