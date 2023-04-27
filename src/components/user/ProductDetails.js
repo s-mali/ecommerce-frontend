@@ -7,10 +7,13 @@ import {
   CardMedia,
   CardContent,
   CardActions,
+  IconButton
 } from '@mui/material';
+import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import { fatchProductDetails , removeProduct} from '../../redux/actions/productAction';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
+import { addTowishlist } from '../../redux/actions/wishlistAction';
 
 
 const ProductDetails = () => {
@@ -21,7 +24,6 @@ const ProductDetails = () => {
 
   const dispatch = useDispatch();
 
-  console.log("===>>>product", product)
 
   useEffect(() => {
 
@@ -33,6 +35,9 @@ const ProductDetails = () => {
     }
   }, [productId])
 
+  const addInwishlist = () =>{
+    dispatch(addTowishlist(product))
+  }
 
   return (
     <Grid container
@@ -70,10 +75,12 @@ const ProductDetails = () => {
             <Button
               variant="contained"
               sx = {{background : 'black' }}
-            // onClick={product.handleAddToCart}
             >
               Add to Cart
             </Button>
+            <IconButton onClick={()=>addInwishlist()}>
+              <ShoppingBagIcon/>
+            </IconButton>
           </CardContent>
         </Grid>
 
