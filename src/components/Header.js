@@ -64,7 +64,8 @@ function Header() {
                 </Grid>
               ) : (
                 <Grid item >
-                  <IconButton onClick={() => logout()}>
+                  <IconButton onClick={() => logout()}
+                    sx={{color:'black'}}>
                     <LogoutIcon />
                   </IconButton>
                 </Grid>

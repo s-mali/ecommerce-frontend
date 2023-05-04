@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Grid, Box,
   Typography,
@@ -14,11 +14,14 @@ import { fatchProductDetails , removeProduct} from '../../redux/actions/productA
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { addTowishlist } from '../../redux/actions/wishlistAction';
-
+import { ThreeDots } from 'react-loader-spinner';
+import { addToCart } from '../../redux/actions/cartAction';
 
 const ProductDetails = () => {
 
   const product = useSelector((state) => state.productDetails)
+
+  const [isLoading , setLoading] = useState(true);
 
   const { productId } = useParams();
 
@@ -29,6 +32,7 @@ const ProductDetails = () => {
 
     if (productId && productId !== '') {
       dispatch(fatchProductDetails(productId))
+      setLoading(false)
     }
     return () => {
       dispatch(removeProduct())
@@ -39,9 +43,14 @@ const ProductDetails = () => {
     dispatch(addTowishlist(product))
   }
 
+  const addInCart = () =>{
+    dispatch(addToCart(product))
+  }
+
   return (
     <Grid container
       direction="column"
+      display= 'flex'
       alignItems="center"
       marginTop= "10%"
       justifyContent="center">
@@ -55,7 +64,8 @@ const ProductDetails = () => {
         alignItems: "center",
       }}>
         <Grid item xs>
-          <CardMedia component="img" image={'https://via.placeholder.com/500x500'}
+          <CardMedia component="img" height='500' image={product.productImage}
+            style={{ objectFit: 'cover'}}
             title={product.productName} />
         </Grid>
         <Grid item >
@@ -69,10 +79,13 @@ const ProductDetails = () => {
             <Typography variant="h6" color="primary" component="p">
               ${product.price}
             </Typography>
+            <Typography variant="h6" component="h6">
+              {product.brand}
+            </Typography>
             <Typography variant="body2" color="textSecondary" component="p">
               {product.inStock > 0 ? 'In Stock' : 'Out of Stock'}
             </Typography>
-            <Button
+            <Button onClick={() => addInCart()}
               variant="contained"
               sx = {{background : 'black' }}
             >

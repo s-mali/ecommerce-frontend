@@ -1,88 +1,92 @@
-import React, { useEffect, useState } from 'react'
+import React, { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Dashboard from '../components/admin/Dashboard'
+import PrivateRoute from './privateRoutes'
 import PublicRoutes from './PublicRoutes'
-import Cart from '../components/user/Cart'
-import Wishlist from '../components/user/Wishlist'
-import ProductList from '../components/user/ProductList'
-import ProductDetails from '../components/user/ProductDetails'
 import Login from '../components/auth/Login'
 import SignUp from '../components/auth/SignUp'
-import Header from '../components/Header'
-import PrivateRoute from './privateRoutes'
+const Dashboard = lazy(() => import('../components/admin/Dashboard'))
+const Cart = lazy(() => import('../components/user/Cart'))
+const Wishlist = lazy(() => import('../components/user/Wishlist'))
+const ProductList = lazy(() => import('../components/user/ProductList'))
+const ProductDetails = lazy(() => import('../components/user/ProductDetails'))
+const Header = lazy(() => import('../components/Header'))
+
 
 function AppRoutes() {
 
 
     return (
         <BrowserRouter>
-            <Header />
-            <Routes>
-                <Route
-                    path="/admin/dashboard"
-                    element={
-                        <PrivateRoute roles={['admin']}>
-                            <Dashboard />
-                        </PrivateRoute>
-                    }
-                />
-                <Route
-                    path = "/cart"
-                    element={
-                        <PrivateRoute  roles={['user']}>
-                            <Cart/>
-                        </PrivateRoute>
-                    }
-                />
-                <Route
-                    path = "/wishlist"
-                    element={
-                        <PrivateRoute roles={['user']} >
-                            <Wishlist/>
-                        </PrivateRoute>
-                    }
-                />
-                <Route
-                    path = "/products"
-                    element={
-                        <PrivateRoute roles={['user']}>
-                            <ProductList/>
-                        </PrivateRoute>
-                    }
-                />
-                <Route
-                    path = "/products/:productId"
-                    element={
-                        <PrivateRoute roles={['user']}>
-                            <ProductDetails/>
-                        </PrivateRoute>
-                    }
-                />
-                <Route
-                    path = "/login"
-                    element={
-                        <PublicRoutes>                      
-                            <Login/>                      
-                        </PublicRoutes>
-                    }
-                />
-                <Route
-                    path = "/signup"
-                    element={
-                        <PublicRoutes >
-                            <SignUp/>
-                        </PublicRoutes>
-                    }
-                />
-                <Route
-                    path = "*"
-                    element={
-                        <PublicRoutes />
-                    }
-                />
-                
-            </Routes>
-           
+            <Suspense fallback={<div>Loading...</div>}>
+                <Header />
+                <Routes>
+                    <Route
+                        path="/admin/dashboard"
+                        element={
+                            <PrivateRoute roles={['admin']}>
+                                <Dashboard />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/cart"
+                        element={
+                            <PrivateRoute roles={['user']}>
+                                <Cart />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/wishlist"
+                        element={
+                            <PrivateRoute roles={['user']} >
+                                <Wishlist />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/products"
+                        element={
+                            <PrivateRoute roles={['user']}>
+                                <ProductList />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/products/:productId"
+                        element={
+                            <PrivateRoute roles={['user']}>
+                                <ProductDetails />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/login"
+                        element={
+                            <PublicRoutes>
+                                <Login />
+                            </PublicRoutes>
+                        }
+                    />
+                    <Route
+                        path="/signup"
+                        element={
+                            <PublicRoutes >
+                                <SignUp />
+                            </PublicRoutes>
+                        }
+                    />
+                    <Route
+                        path="*"
+                        element={
+                            <PublicRoutes />
+                        }
+                    />
+
+                </Routes>
+            </Suspense>
+
+
         </BrowserRouter>
     )
 }

@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import {
   Box, Button, Grid, Paper, TextField, Typography, Modal, MenuItem,
-  Table, TableContainer, TableHead, TableRow, TableBody, TableCell,
-  Dialog, DialogTitle, DialogContent, DialogActions, Pagination
+  Table, TableContainer, TableHead, TableRow, TableBody, TableCell, CardMedia,
+  Dialog, DialogTitle, DialogContent, DialogActions, Pagination,Avatar
 } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import IconButton from '@mui/material/IconButton';
@@ -14,6 +14,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import apiInstance from '../../redux/apiInstance/api';
 import CloseIcon from '@mui/icons-material/Close';
+import Dropzone, {useDropzone} from 'react-dropzone'
+import { ThreeDots } from 'react-loader-spinner';
 
 const categories = [
   { value: "Electronics", label: "Electronics" },
@@ -26,6 +28,7 @@ const categories = [
 
 const validationSchema = yup.object().shape({
   productName: yup.string().required("Product Name is required"),
+  productImage: yup.mixed().required("Product Image is required"),
   brand: yup.string().required("Brand is required"),
   category: yup.string().required("category is required"),
   price: yup.number().required("Price is required").positive().integer("Price must be positive Number"),
@@ -36,6 +39,19 @@ const validationSchema = yup.object().shape({
 
 function Dashboard() {
 
+  const dropZoneStyles={
+    height: 150,
+    borderWidth: 1,
+    borderColor: '#bdbdbd',
+    borderStyle: 'solid',
+    borderRadius: 5,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: '#bdbdbd',
+  }
+
   const { handleSubmit, reset, control, formState: { errors } } = useForm({
     mode: "onChange",
     resolver: yupResolver(validationSchema),
@@ -45,10 +61,15 @@ function Dashboard() {
   const [pageNo, setPageNo] = useState(1)
   const [isUpdating, setUpdate] = useState(false)
   const [totalPage, setTotalPage] = useState(1)
+  const [productImage, setProductImage] = useState(null);
+  const [isLoading, setLoading] = useState(true)
+  const [toUpdate, setToUpdate] = useState({})
+
 
   useEffect(() => {
     apiInstance.get(`/getProducts?page=${pageNo}&limit=${10}`).then((response) => {
       setProducts(response.data.products)
+      setLoading(false)
       let pageCount = Math.ceil((response.data.total)/10)
       setTotalPage(pageCount)
     })
@@ -63,6 +84,8 @@ function Dashboard() {
     setOpen(false);
     setUpdate(false)
     setDeleteModel(false)
+    setProductImage(null)
+    setToUpdate({})
     reset()
   };
 
@@ -73,22 +96,48 @@ function Dashboard() {
   }
 
   const onSubmit = (data) => {
-    handleClose()
-    apiInstance.post(`/addProduct`, data).then((response) => {
+    let formData = new FormData;
+      formData.append('image', productImage)
+        let payload = data
+
+        for (let key in payload) {
+            formData.append(key, payload[key]);
+        }
+        handleClose()
+    apiInstance.post(`/addProduct`, formData,{
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }).then((response) => {
       products.pop()
       setProducts([response.data.product, ...products])
     })
   }
 
-  const handleUpdate = (productId) => {
+  const handleUpdate = (productId,index) => {
     setOpen(true);
-    let updatingProduct = products.filter((c) => c._id === productId)
-    reset(updatingProduct[0])
+    var updatingProduct = products[index]
+    setProductImage({preview: updatingProduct.productImage})
+    reset(updatingProduct)
   }
 
-  const updateProduct = (data) => {
+  const updateProduct = (data) => { 
+    let formData = new FormData;
+    if(productImage instanceof File){
+      formData.append('image', productImage)
+    }    
+    let payload = data
+    for (let key in payload) {
+      if (key!== 'productImage')
+        formData.append(key, payload[key]);
+    }
     handleClose()
-    apiInstance.post(`/updateProduct/${data._id}`, data).then((response) => {
+    
+    apiInstance.post(`/updateProduct/${data._id}`, formData,{
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      }).then((response) => {
       const index = products.findIndex(product => product._id === response.data._id)
       const newProducts = [...products]
       newProducts[index] = { ...response.data }
@@ -97,6 +146,7 @@ function Dashboard() {
   }
 
   const handlePageChange = (event, value) => {
+    setLoading(true)
     setPageNo(value);
   }
 
@@ -106,6 +156,19 @@ function Dashboard() {
       setProducts(products.filter((c) => c._id !== productId));
     })
   }
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: 'image/*',
+    onDrop: (acceptedFiles) => {
+      setProductImage(
+        acceptedFiles.map((file) =>
+          Object.assign(file, {
+            preview: URL.createObjectURL(file),
+          })
+        )[0]
+      );
+    },
+  });
 
   return (
     <div>
@@ -143,6 +206,35 @@ function Dashboard() {
         </Grid>
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogContent>
+          <Controller
+              name="productImage"
+              control={control}
+              defaultValue=""
+              render={({ field }) => ( 
+                <div {...getRootProps()} style={dropZoneStyles}>
+                  <input {...getInputProps()} />
+                  {isDragActive ? (
+                    <p>Drop the product image here ...</p>
+                  ) : (
+                    <p>
+                      Drag 'n' drop a product image here, or click to select an
+                      image
+                    </p>
+                    )}
+                  {productImage && (
+                    <img
+                      src={productImage.preview || toUpdate.productImage}
+                      alt="Product Preview"
+                      style={{ height: '50%', width: '20%', objectFit: 'cover'}}
+                    />
+                  ) 
+                  }
+                  {errors.productImage && (
+                    <span style={{ color: 'red' }}>{errors.productImage.message}</span>
+                  )}
+                </div>
+              )} 
+             /> 
             <Controller
               name="productName"
               control={control}
@@ -282,11 +374,22 @@ function Dashboard() {
               <Typography>Page No. {pageNo}</Typography>
             </Grid>
           </Grid>
+          { isLoading ? <ThreeDots 
+            height="80" 
+            width="80" 
+            radius="9"
+            color="black" 
+            ariaLabel="three-dots-loading"
+            wrapperStyle={{ display: 'flex', justifyContent:'center', alignItems:'center'}}
+            wrapperClassName=""
+            visible={true}
+        /> :  
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 100 }} size="small" aria-label="a dense table">
               <TableHead>
                 <TableRow>
-                  <TableCell>S.no</TableCell>
+                  <TableCell align='left'>S.no</TableCell>
+                  <TableCell align="center">Avatar</TableCell>
                   <TableCell align="center">Name</TableCell>
                   <TableCell align="center">Price</TableCell>
                   <TableCell align="center">Category</TableCell>
@@ -305,6 +408,19 @@ function Dashboard() {
                     <TableCell component="th" scope="row">
                       {(index + 1 + (pageNo - 1) * 10)}
                     </TableCell>
+                    <TableCell align="right">
+                      {product.productImage ?
+                      <Avatar
+                          alt={product.productName}
+                          src={product.productImage}
+                          sx={{ width: 60, height: 60 }}
+                      /> : 
+                      <Avatar
+                        alt={product.productName}
+                        src="https://via.placeholder.com/5x5"
+                        sx={{ objectFit: 'cover' }}
+                      />}
+                    </TableCell>
                     <TableCell align="center">{product.productName}</TableCell>
                     <TableCell align="center">${product.price}</TableCell>
                     <TableCell align="center">{product.category}</TableCell>
@@ -316,7 +432,7 @@ function Dashboard() {
                       </IconButton>
                     </TableCell>
                     <TableCell align="center">
-                      <IconButton onClick={() => { setUpdate(true); handleUpdate(product._id) }}>
+                      <IconButton onClick={() => { setUpdate(true); handleUpdate(product._id, index);}}>
                         <EditIcon />
                       </IconButton>
                     </TableCell>
@@ -324,7 +440,7 @@ function Dashboard() {
                 ))}
               </TableBody>
             </Table>
-          </TableContainer>
+          </TableContainer>}
           <Grid container justifyContent="center" >
             <Pagination count={totalPage} size="large" onChange={handlePageChange} />
           </Grid>

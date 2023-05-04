@@ -2,7 +2,7 @@ import { Grid, List, ListItem, ListItemText, Typography, Card, CardMedia, CardCo
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
-
+import { ThreeDots } from 'react-loader-spinner';
 
 function Product() {
 
@@ -29,7 +29,7 @@ function Product() {
           <CardMedia
             component="img"
             height="200"
-            image={'https://via.placeholder.com/200x200'}
+            image={product.productImage}
             alt={product.productName}
           />
           <CardContent>

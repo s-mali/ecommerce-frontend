@@ -9,7 +9,7 @@ import { getWishList, removeFromWishlist } from '../../redux/actions/wishlistAct
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { Stack } from '@mui/joy';
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import { addToCart } from '../../redux/actions/cartAction';
 
 function Wishlist() {
 
@@ -23,6 +23,10 @@ function Wishlist() {
 
   const deleteFromWishlist = (id) => {
     dispatch(removeFromWishlist(id))
+  }
+
+  const addInCart = (product) => {
+    dispatch(addToCart(product))
   }
 
   return (
@@ -66,7 +70,7 @@ function Wishlist() {
                       <TableCell align="right">
                         <Avatar
                           alt={product.productName}
-                          src="https://via.placeholder.com/10x10"
+                          src={product.productImage}
                           sx={{ width: 60, height: 60 }}
                         />
                       </TableCell>
@@ -74,7 +78,7 @@ function Wishlist() {
                       <TableCell align="left">${product.price}</TableCell>
                       <TableCell align="left">{product.inStock}</TableCell>
                       <TableCell align="center">
-                        <Button
+                        <Button onClick={()=> addInCart(product)}
                           variant="contained"
                           sx={{
                             background: 'black',
