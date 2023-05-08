@@ -2,11 +2,14 @@ import { actionTypes } from '../constants/actionTypes'
 
 const initState = null;
 
-export default (state = initState, action) => {
-  switch (action.type) {
+export const userState = (state = initState, {type , payload}) => {
+  switch (type) {
 
-    case actionTypes.LOGIN_SUCCESS:
-      return action.payload
+    case actionTypes.LOGIN:
+      return { ...payload }
+
+    case actionTypes.SIGNUP:
+      return { ...payload}
 
     default:
       return state;

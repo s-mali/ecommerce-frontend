@@ -7,7 +7,10 @@ const initiState ={
 export const fatchProducts = (state = initiState, {type,payload} ) => {
     switch (type) {
         case actionTypes.FATCH_PRODUCTS: 
-            return {...state , products: payload}
+            return {...state , total:payload.total, products: [...state.products ,...payload.products]}
+
+        case actionTypes.REMOVE_PRODUCT_LIST:
+            return { products : []}
 
         default:
             return state;

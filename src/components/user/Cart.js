@@ -12,13 +12,16 @@ function Cart() {
 
   const cart = useSelector(state => state.cart)
 
+  const [total, setTotal] = useState();
+
   const dispatch = useDispatch()
 
   console.log(cart)
 
   useEffect(() => {
     dispatch(getCart)
-  }, [])
+    setTotal(cart.reduce((acc, curr)=> acc+ Number(curr.price * curr.quantity),0))
+  }, [cart])
 
   const quantityInc = (productId) => {
     dispatch(increaseQuantity(productId))
@@ -87,7 +90,7 @@ function Cart() {
               <Typography></Typography>            
             </Grid>
             <Grid item>
-              <Typography>Total : $</Typography>
+              <Typography>Total : ${total}</Typography>
             </Grid>
           </Grid>
       </Stack>

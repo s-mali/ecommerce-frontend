@@ -8,12 +8,12 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { GoogleLogin } from '@react-oauth/google';
 import { useDispatch, useSelector } from 'react-redux'
-//import { login } from '../redux/actions/authAction'
-
+import { logIn } from '../../redux/actions/authAction';
+import apiInstance from '../../redux/apiInstance/api';
 
 function Login() {
 
-    // const dispatch = useDispatch()
+    const dispatch = useDispatch()
 
     const navigate = useNavigate()
     
@@ -30,9 +30,9 @@ function Login() {
 
     const onSubmit = data => {
 
-        axios.post('http://localhost:5000/api/v1/login', data)
+        apiInstance.post('/login', data)
             .then((response) => {
-                console.log(response.data);
+                dispatch(logIn(response.data.user))
                 sessionStorage.setItem("token", response.data.accessToken)
                 sessionStorage.setItem("role", response.data.user.role)
                 if(response.data.user.role === 'user'){
@@ -50,9 +50,9 @@ function Login() {
     const onSuccess = (response) => {
         console.log(response);
         let data = jwtDecode( response.credential)
-        axios.post('http://localhost:5000/api/v1/login', data)
+        apiInstance.post('/login', data)
             .then((response) => {
-                console.log(response.data);
+                dispatch(logIn(response.data.user))
                 sessionStorage.setItem("token", response.data.accessToken);
                 sessionStorage.setItem("role", response.data.user.role);
                 if(response.data.user.role === 'user'){

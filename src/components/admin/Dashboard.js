@@ -117,32 +117,45 @@ function Dashboard() {
   const handleUpdate = (productId,index) => {
     setOpen(true);
     var updatingProduct = products[index]
+    setToUpdate(updatingProduct)
     setProductImage({preview: updatingProduct.productImage})
     reset(updatingProduct)
   }
 
-  const updateProduct = (data) => { 
+  const updateProduct = (data) => {
+    let callApi = false 
     let formData = new FormData;
     if(productImage instanceof File){
       formData.append('image', productImage)
+      callApi = true
     }    
     let payload = data
-    for (let key in payload) {
-      if (key!== 'productImage')
-        formData.append(key, payload[key]);
+
+    if(JSON.stringify(payload) === JSON.stringify(toUpdate)){
+      if(!callApi){
+        callApi = false
+      }
+    }
+    else{
+      for (let key in payload) {
+        if (key!== 'productImage')
+          formData.append(key, payload[key]);
+      }
+      callApi = true
     }
     handleClose()
-    
-    apiInstance.post(`/updateProduct/${data._id}`, formData,{
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-      }).then((response) => {
-      const index = products.findIndex(product => product._id === response.data._id)
-      const newProducts = [...products]
-      newProducts[index] = { ...response.data }
-      setProducts(newProducts);
-    })
+    if(callApi){
+      apiInstance.post(`/updateProduct/${data._id}`, formData,{
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        }).then((response) => {
+        const index = products.findIndex(product => product._id === response.data._id)
+        const newProducts = [...products]
+        newProducts[index] = { ...response.data }
+        setProducts(newProducts);
+      })
+    }
   }
 
   const handlePageChange = (event, value) => {

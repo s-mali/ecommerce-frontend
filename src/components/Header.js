@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react'
-import { AppBar, Box, Grid, IconButton, Button, Toolbar, CardMedia } from '@mui/material'
+import { AppBar, Box, Grid, IconButton, Button, Toolbar, CardMedia, Avatar, Menu, MenuItem } from '@mui/material'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 function Header() {
 
+  const user = useSelector(state => state.user);
   const navigate = useNavigate()
+  const location = useLocation()
 
   const [isAuth, setAuth] = useState(false)
   const [role, setRole] = useState()
+  const [anchorEl, setAnchorEl] = useState(null);
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');
@@ -18,14 +22,25 @@ function Header() {
 
     if (token) {
       setAuth(true)
+    } else {
+      setAuth(false)
     }
     if (role) {
       setRole(role)
+    } else {
+      setRole(null)
     }
-  }, [])
+  }, [location])
 
+  const handleButtonClick = event => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const logout = () => {
+    handleClose()
     sessionStorage.clear()
     navigate('/login');
 
@@ -41,7 +56,8 @@ function Header() {
                 <CardMedia
                   component="img"
                   title='MY APP'
-                  src={'https://images.app.goo.gl/Vu29KZgYwNYfsx7x6'}
+                  sx={{ objectFit: 'cover', width: "10%", height: 40 }}
+                  src={'http://res.cloudinary.com/djtxo7fay/image/upload/v1683181339/vsn8qbrlhss4h5x9dulu.jpg'}
                 />
               </Link>
             </Grid>
@@ -49,33 +65,48 @@ function Header() {
             {isAuth ? (
               role === 'user' ? (
                 <Grid item >
-                  <IconButton onClick={() => navigate('/wishlist')} 
-                    sx={{color:'black'}}>
+                  <IconButton onClick={() => navigate('/wishlist')}
+                    sx={{ color: 'black' }}>
                     <ShoppingBagIcon />
                   </IconButton>
                   <IconButton onClick={() => navigate('/cart')}
-                    sx={{color:'black'}}>
+                    sx={{ color: 'black' }}>
                     <ShoppingCartIcon />
                   </IconButton>
-                  <IconButton onClick={() => logout()}
-                    sx={{color:'black'}}>
-                    <LogoutIcon />
-                  </IconButton>
+                  <Button onClick={handleButtonClick}>
+                    <Avatar src={'../Assets/360_F_353110097_nbpmfn9iHlxef4EDIhXB1tdTD0lcWhG9.jpg'} />
+                  </Button>
+                  <Menu
+                    id="simple-menu"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}
+                  >
+                    <MenuItem onClick={()=>{ navigate('/profile'); handleClose()}}>Profile</MenuItem>
+                    <MenuItem onClick={()=> logout()}>Log Out</MenuItem>
+                  </Menu>
                 </Grid>
               ) : (
                 <Grid item >
                   <IconButton onClick={() => logout()}
-                    sx={{color:'black'}}>
+                    sx={{ color: 'black' }}>
                     <LogoutIcon />
                   </IconButton>
                 </Grid>
               )) :
               (<Grid item>
-                <Button
-                  variant="contained"
-                  sx={{ background: 'black' }}>
-                  Sign In
-                </Button>
+                {(location.pathname === '/login') ?
+                  <Button onClick={() => navigate('/signup')}
+                    variant="contained"
+                    sx={{ background: 'black' }}>
+                    Sign Up
+                  </Button> :
+                  <Button onClick={() => navigate('/login')}
+                    variant="contained"
+                    sx={{ background: 'black' }}>
+                    Sign In
+                  </Button>}
               </Grid>)}
           </Grid>
         </Toolbar>

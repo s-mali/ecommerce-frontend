@@ -3,9 +3,20 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
 import { ThreeDots } from 'react-loader-spinner';
+import { makeStyles } from '@mui/styles';
+
+const useStyles = makeStyles((theme) => ({
+  container : {
+    '&:hover': {
+      cursor : 'pointer'
+    },
+  }
+ }))
 
 function Product() {
 
+  const classes = useStyles();
+  
   const navigate = useNavigate()
 
   const products = useSelector((state)=>state.allProducts.products)
@@ -21,9 +32,10 @@ function Product() {
     width='half'
     >
     {products.map(product => (
-      <Grid item onClick ={()=>{navigateToDetails(product._id)}}
+      <Grid item onClick ={()=>{navigateToDetails(product._id) }}
         xs={12} sm={6} md={2} key={product._id}
         alignItems = 'center'
+        className={classes.container}
         >
         <Card sx={{ height: '100%' }}>
           <CardMedia

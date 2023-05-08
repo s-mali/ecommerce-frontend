@@ -3,10 +3,15 @@ import  apiInstance  from '../apiInstance/api'
 import axios from 'axios'
 
 
-export const fatchProducts = () => async(dispatch) => {
-    const response = await apiInstance.get('/getProducts');
+export const fatchProducts = (page , limit) => async(dispatch) => {
+    const response = await apiInstance.get(`/getProducts?page=${page}&limit=${limit}`);
 
-    dispatch({type: actionTypes.FATCH_PRODUCTS , payload: response.data.products})
+    dispatch({type: actionTypes.FATCH_PRODUCTS , payload: response.data})
+}
+export const removeProductList = () => {
+    return {
+        type : actionTypes.REMOVE_PRODUCT_LIST,
+    }
 }
 
 export const fatchProductDetails = (id) => async(dispatch) => {
