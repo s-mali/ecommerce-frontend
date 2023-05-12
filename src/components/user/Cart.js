@@ -7,16 +7,17 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getCart, removeFormCart , increaseQuantity, decreaseQuantity} from '../../redux/actions/cartAction'
 import { Stack } from '@mui/joy';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+import { loadStripe } from "@stripe/stripe-js";
+import apiInstance from '../../redux/apiInstance/api';
 
 function Cart() {
 
   const cart = useSelector(state => state.cart)
 
   const [total, setTotal] = useState();
-
+ // const [product, setProduct] = useState({})
   const dispatch = useDispatch()
 
-  console.log(cart)
 
   useEffect(() => {
     dispatch(getCart)
@@ -33,6 +34,21 @@ function Cart() {
 
   const removeItem = (productId) => {
     dispatch(removeFormCart(productId))
+  }
+
+  const handleClick = async () => {
+    let product = { name: "shopping", 
+                    price: total,
+                    quantity: 1
+                  }              
+    const stripe = await loadStripe("pk_test_51N5lEpSIxhgB0CDKAmeeADPMpb2IesfYltsrURSnFghQT9JIAGUeXPifXKGT9A7hEmZgJbtDNw2rgJZDX2JO53O2005hJi6JVs");
+    const response = await apiInstance.post('/create-checkout-session',{product})
+    const session = await response.data;
+    const result = await stripe.redirectToCheckout({
+      sessionId: session.id,
+    });
+    if (result.error) {
+    }
   }
 
   return (
@@ -87,7 +103,7 @@ function Cart() {
         <Divider variant="inset" />
         <Grid container >
             <Grid item xs>
-              <Typography></Typography>            
+              <Button disabled={total <= 0} onClick={() => handleClick()}>Pay</Button>            
             </Grid>
             <Grid item>
               <Typography>Total : ${total}</Typography>

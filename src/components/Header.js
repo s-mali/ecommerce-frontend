@@ -15,6 +15,7 @@ function Header() {
   const [isAuth, setAuth] = useState(false)
   const [role, setRole] = useState()
   const [anchorEl, setAnchorEl] = useState(null);
+  const userImage = sessionStorage.getItem('userImage');
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');
@@ -50,13 +51,13 @@ function Header() {
     <>
       <AppBar position="static" color='transparent' >
         <Toolbar>
-          <Grid container>
-            <Grid item xs>
+          <Grid container display='flex' justifyContent='space-between'>
+            <Grid item >
               <Link to='/products'>
                 <CardMedia
                   component="img"
                   title='MY APP'
-                  sx={{ objectFit: 'cover', width: "10%", height: 40 }}
+                  sx={{ objectFit: 'cover', width: 150, height: 40, p:'4px'}}
                   src={'http://res.cloudinary.com/djtxo7fay/image/upload/v1683181339/vsn8qbrlhss4h5x9dulu.jpg'}
                 />
               </Link>
@@ -74,7 +75,7 @@ function Header() {
                     <ShoppingCartIcon />
                   </IconButton>
                   <Button onClick={handleButtonClick}>
-                    <Avatar src={'../Assets/360_F_353110097_nbpmfn9iHlxef4EDIhXB1tdTD0lcWhG9.jpg'} />
+                    <Avatar src={userImage || '../Assets/360_F_353110097_nbpmfn9iHlxef4EDIhXB1tdTD0lcWhG9.jpg'} />
                   </Button>
                   <Menu
                     id="simple-menu"

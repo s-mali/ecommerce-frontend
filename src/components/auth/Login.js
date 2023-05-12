@@ -35,6 +35,7 @@ function Login() {
                 dispatch(logIn(response.data.user))
                 sessionStorage.setItem("token", response.data.accessToken)
                 sessionStorage.setItem("role", response.data.user.role)
+                sessionStorage.setItem("userImage", response.data.user.userImage)
                 if(response.data.user.role === 'user'){
                     navigate('/products')
                 }
@@ -55,6 +56,7 @@ function Login() {
                 dispatch(logIn(response.data.user))
                 sessionStorage.setItem("token", response.data.accessToken);
                 sessionStorage.setItem("role", response.data.user.role);
+                sessionStorage.setItem("userImage", response.data.user.userImage)
                 if(response.data.user.role === 'user'){
                     navigate('/products')
                 }
