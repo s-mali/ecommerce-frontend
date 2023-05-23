@@ -3,7 +3,7 @@ import axios from 'axios';
 import {
   Box, Button, Grid, Paper, TextField, Typography, Modal, MenuItem,
   Table, TableContainer, TableHead, TableRow, TableBody, TableCell, CardMedia,
-  Dialog, DialogTitle, DialogContent, DialogActions, Pagination,Avatar
+  Dialog, DialogTitle, DialogContent, DialogActions, Pagination,Skeleton, Card, Input, Autocomplete, Select
 } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import IconButton from '@mui/material/IconButton';
@@ -16,6 +16,7 @@ import apiInstance from '../../redux/apiInstance/api';
 import CloseIcon from '@mui/icons-material/Close';
 import Dropzone, {useDropzone} from 'react-dropzone'
 import { ThreeDots } from 'react-loader-spinner';
+import { CheckCircleOutline } from '@mui/icons-material';
 
 const categories = [
   { value: "Electronics", label: "Electronics" },
@@ -64,6 +65,9 @@ function Dashboard() {
   const [productImage, setProductImage] = useState(null);
   const [isLoading, setLoading] = useState(true)
   const [toUpdate, setToUpdate] = useState({})
+  const [selectedValues, setSelectedValues] = useState([]);
+  const [inputValue, setInputValue] = useState('');
+
 
 
   useEffect(() => {
@@ -182,6 +186,27 @@ function Dashboard() {
       );
     },
   });
+
+  const handleSelectChange = (event, values) => {
+    setSelectedValues(values);
+  };
+
+  const handleChange = (event) => {
+    setInputValue(event.target.value);
+  };
+
+  const onFilter = () => {
+    setLoading(true)
+    let payload = {
+      name : inputValue,
+      categories  : selectedValues
+    }
+    console.log(payload)
+    apiInstance.post('/filterProducts' , payload).then(response => {
+      setProducts(response.data)
+      setLoading(false)
+    })
+  }
 
   return (
     <div>
@@ -379,24 +404,100 @@ function Dashboard() {
         py: 4,
       }}>
         <Stack spacing={3}>
-          <Grid container >
-            <Grid item xs>
+          <Grid container 
+          display='flex' justifyContent='space-between' alignItems='end' flexDirection = 'row'>
+            <Grid>
               <Button sx={{ background: 'black' }} onClick={handleOpen} variant="contained">Add Product</Button>
             </Grid>
-            <Grid item>
+            <Grid>
+              <TextField
+                label="Search by Name"
+                variant="standard"
+                value={inputValue}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid>
+              <Autocomplete
+                multiple
+                options={categories.map((option )=> {return option.value})}
+                value={selectedValues}
+                onChange={handleSelectChange}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Search Categories"
+                    variant="standard"
+                  />
+                )}
+              />
+            </Grid>
+            <Grid>
+              <Button sx={{ background: 'black' }} onClick={onFilter} 
+                variant="contained" 
+                disabled={selectedValues.length <= 0 && inputValue === ''}>Filter
+              </Button>
+            </Grid>
+            <Grid>
               <Typography>Page No. {pageNo}</Typography>
             </Grid>
           </Grid>
-          { isLoading ? <ThreeDots 
-            height="80" 
-            width="80" 
-            radius="9"
-            color="black" 
-            ariaLabel="three-dots-loading"
-            wrapperStyle={{ display: 'flex', justifyContent:'center', alignItems:'center'}}
-            wrapperClassName=""
-            visible={true}
-        /> :  
+          { isLoading ? 
+
+
+          //skelton Loading 
+
+          <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 100 }} size="small" aria-label="a dense table">
+            <TableHead>
+              <TableRow>
+                <TableCell align='left'>S.no</TableCell>
+                <TableCell align="center">Avatar</TableCell>
+                <TableCell align="center">Name</TableCell>
+                <TableCell align="center">Price</TableCell>
+                <TableCell align="center">Category</TableCell>
+                <TableCell align="center">In Stock</TableCell>
+                <TableCell align="center">Brand</TableCell>
+                <TableCell align="center">Delete</TableCell>
+                <TableCell align="center">Edit</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {[0,1,2,3,4,5,6,7,8,9].map((index) => (
+                <TableRow
+                  key={index}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    <Skeleton/>
+                  </TableCell>
+                  <TableCell align="right">                    
+                    <Skeleton variant="rectangular" sx={{height: 60 ,width: 60, m:'auto'}} />            
+                  </TableCell>
+                  <TableCell align="center"><Skeleton/></TableCell>
+                  <TableCell align="center"><Skeleton/></TableCell>
+                  <TableCell align="center"><Skeleton/></TableCell>
+                  <TableCell align="center"><Skeleton/></TableCell>
+                  <TableCell align="center"><Skeleton/></TableCell>
+                  <TableCell align="center">
+                    <IconButton>
+                      <Skeleton variant="circular" width={40} height={40} />
+                    </IconButton>
+                  </TableCell>
+                  <TableCell align="center">
+                    <IconButton>
+                      <Skeleton variant="circular" width={40} height={40} />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+          
+        //Data Table
+
+         :  
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 100 }} size="small" aria-label="a dense table">
               <TableHead>
@@ -423,15 +524,15 @@ function Dashboard() {
                     </TableCell>
                     <TableCell align="right">
                       {product.productImage ?
-                      <Avatar
-                          alt={product.productName}
-                          src={product.productImage}
-                          sx={{ width: 60, height: 60 }}
-                      /> : 
-                      <Avatar
+                      <CardMedia
+                      alt={product.productName}
+                      image={product.productImage}
+                      sx={{height: 60 ,width: 60, m:'auto'}}
+                    /> : 
+                      <CardMedia
                         alt={product.productName}
                         src="https://via.placeholder.com/5x5"
-                        sx={{ objectFit: 'cover' }}
+                        sx={{height: 60 ,width: 60, m:'auto'}}
                       />}
                     </TableCell>
                     <TableCell align="center">{product.productName}</TableCell>

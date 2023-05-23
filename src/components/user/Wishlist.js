@@ -160,7 +160,7 @@ function Wishlist() {
                   <TableBody >
                     {[1,2,3,4,5].map((product, index) => (
                       <TableRow
-                        key={product._id}
+                        key={index}
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                       >
                         <TableCell align="left">

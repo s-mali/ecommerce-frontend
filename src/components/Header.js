@@ -49,7 +49,7 @@ function Header() {
 
   return (
     <>
-      <AppBar position="static" color='transparent' >
+      <AppBar position="relative" color='transparent' >
         <Toolbar>
           <Grid container display='flex' justifyContent='space-between'>
             <Grid item >

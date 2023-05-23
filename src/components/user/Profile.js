@@ -8,6 +8,9 @@ import { Box, Button, Container, Grid, TextField, Typography, Skeleton, IconButt
 import { styled } from '@mui/material/styles';
 import { Edit as EditIcon, FormatIndentIncreaseOutlined, Save as SaveIcon } from '@mui/icons-material';
 import noUserImage from '../../Assets/360_F_353110097_nbpmfn9iHlxef4EDIhXB1tdTD0lcWhG9.jpg'
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+//import LocationOnIcon from '@material-ui/icons/LocationOn';
+
 
 const UserProfileImage = styled('img')({
   width: '50%',
@@ -44,11 +47,16 @@ function Profile() {
   const [isWaiting, setWaiting] = useState(true);
 
   const handleEditClick = () => {
+
+    const inputDate = new Date(user.dob);
+    inputDate.setUTCDate(inputDate.getUTCDate() + 1);
+    const outputDate = inputDate.toISOString().slice(0, 10);
+
     reset({
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
-      dob: user.dob ? new Date(user.dob).toISOString().slice(0, 10) : undefined,
+      dob: user.dob ? outputDate : undefined,
       phone: user.phone ? user.phone : undefined
     })
     setIsEditing(true);
@@ -247,6 +255,10 @@ function Profile() {
                     <Typography variant="subtitle1" gutterBottom>
                       Phone: {user.phone}
                     </Typography>
+                    <Typography variant="h6" component="h1">
+                      <LocationOnIcon sx={{color : 'red', fontSize : 'initial'}}/> 
+                      {`  ${user.location.city}, ${user.location.region}, ${user.location.country}`}
+                    </Typography>
                     <Box sx={{ mt: 2 }}>
                       <Button variant="contained" sx={{ background: 'black' }} onClick={handleEditClick}>
                         Edit
@@ -284,6 +296,9 @@ function Profile() {
                       <Skeleton />
                     </Typography>
                     <Typography variant="subtitle1" >
+                      <Skeleton />
+                    </Typography>
+                    <Typography variant="h6" component="h1">
                       <Skeleton />
                     </Typography>
                     <Box sx={{ mt: 2 }}>

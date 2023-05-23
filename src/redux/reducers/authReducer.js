@@ -15,10 +15,10 @@ export const userState = (state = initState, {type , payload}) => {
       return { ...payload}
 
     case actionTypes.UPDATE_PROFILE:
-      return { ...payload}
+      return { location:state.location , ...payload}
 
     case actionTypes.UPLOAD_PROFILE_IMAGE:
-      return { ...payload }
+      return { location:state.location , ...payload }
 
     default:
       return state;

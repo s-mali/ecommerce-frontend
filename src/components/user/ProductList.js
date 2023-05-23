@@ -7,13 +7,16 @@ import Product from './Product'
 function ProductList() {
 
   const [page, setPage] = useState(1);
+  const [isWaiting , setWaiting] = useState(true);
 
   const totalProducts = useSelector((state)=>state.allProducts.total)
 
   const dispatch = useDispatch()
 
   useEffect(()=>{
-    dispatch(fatchProducts( page , 10));
+    dispatch(fatchProducts( page , 10))
+    .then(() => setWaiting(false))
+    .catch(() => setWaiting(false));
     return () => dispatch(removeProductList());
   },[])
   
@@ -33,7 +36,7 @@ function ProductList() {
 
   return (
     <div>
-        <Product></Product>
+        <Product waiting={isWaiting}></Product>
     </div>
   )
 }

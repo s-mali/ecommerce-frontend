@@ -12,7 +12,9 @@ const ProductList = lazy(() => import('../components/user/ProductList'))
 const ProductDetails = lazy(() => import('../components/user/ProductDetails'))
 const Header = lazy(() => import('../components/Header'))
 const Profile = lazy(() => import('../components/user/Profile'))
-
+const PaymentSuccess = lazy(() => import('../components/user/PaymentSucess'))
+const PaymentFailed = lazy(() => import('../components/user/PaymentFailed'))
+const AdminModule = lazy(() => import('../components/admin/AdminModule'))
 
 function AppRoutes() {
 
@@ -26,7 +28,7 @@ function AppRoutes() {
                         path="/admin/dashboard"
                         element={
                             <PrivateRoute roles={['admin']}>
-                                <Dashboard />
+                                <AdminModule />
                             </PrivateRoute>
                         }
                     />
@@ -67,6 +69,22 @@ function AppRoutes() {
                         element={
                             <PrivateRoute roles={['user']}>
                                 <Profile/>
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/paymentsuccess"
+                        element={
+                            <PrivateRoute roles={['user']}>
+                                <PaymentSuccess/>
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/paymentcancel"
+                        element={
+                            <PrivateRoute roles={['user']}>
+                                <PaymentFailed/>
                             </PrivateRoute>
                         }
                     />
